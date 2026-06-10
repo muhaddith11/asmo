@@ -4,15 +4,29 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { CheckCircle2, Loader2, ShoppingBag } from 'lucide-react'
+import { CheckCircle2, Loader2, ShoppingBag, Banknote, CreditCard, Clock } from 'lucide-react'
 import { useStore, formatPrice } from '@/lib/store'
-import { createOrder } from '@/lib/orders'
+import { createOrder, PaymentMethod } from '@/lib/orders'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+
+const paymentOptions: {
+  id: PaymentMethod
+  label: string
+  desc: string
+  icon: typeof Banknote
+  available: boolean
+}[] = [
+  { id: 'cash', label: 'Naqd pul', desc: 'Eshik oldida to\'laysiz', icon: Banknote, available: true },
+  { id: 'click', label: 'Click', desc: 'Tez kunda', icon: CreditCard, available: false },
+  { id: 'payme', label: 'Payme', desc: 'Tez kunda', icon: CreditCard, available: false },
+]
 
 export default function CheckoutPage() {
   const { cart, getCartTotal, clearCart } = useStore()
   const [form, setForm] = useState({ name: '', phone: '', address: '', note: '' })
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -31,6 +45,7 @@ export default function CheckoutPage() {
         note: form.note,
         items: cart,
         total,
+        paymentMethod,
       })
       clearCart()
       setDone(true)
@@ -149,6 +164,44 @@ export default function CheckoutPage() {
               />
             </div>
 
+            {/* To'lov usuli */}
+            <div>
+              <label className="block text-sm tracking-wider uppercase text-muted-foreground mb-3">
+                To&apos;lov usuli
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {paymentOptions.map((opt) => {
+                  const selected = paymentMethod === opt.id
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      disabled={!opt.available}
+                      onClick={() => opt.available && setPaymentMethod(opt.id)}
+                      className={cn(
+                        'relative flex flex-col items-start gap-2 p-4 border rounded text-left transition-colors',
+                        !opt.available
+                          ? 'border-border opacity-50 cursor-not-allowed'
+                          : selected
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border hover:border-primary'
+                      )}
+                    >
+                      <opt.icon className={cn('w-5 h-5', selected ? 'text-primary' : 'text-muted-foreground')} />
+                      <span className="text-sm font-medium text-foreground">{opt.label}</span>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        {!opt.available && <Clock className="w-3 h-3" />}
+                        {opt.desc}
+                      </span>
+                      {selected && (
+                        <CheckCircle2 className="absolute top-2 right-2 w-4 h-4 text-primary" />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button
@@ -167,7 +220,7 @@ export default function CheckoutPage() {
               )}
             </Button>
             <p className="text-xs text-muted-foreground text-center">
-              To&apos;lov yetkazib berishda naqd yoki karta orqali amalga oshiriladi
+              Hozircha to&apos;lov eshik oldida naqd amalga oshiriladi. Click va Payme tez kunda qo&apos;shiladi.
             </p>
           </form>
 

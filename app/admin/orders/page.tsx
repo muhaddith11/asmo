@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Search, ChevronDown, Phone, MapPin, Loader2 } from 'lucide-react'
 import { formatPrice } from '@/lib/store'
-import { fetchOrders, updateOrderStatus, Order, OrderStatus } from '@/lib/orders'
+import { fetchOrders, updateOrderStatus, Order, OrderStatus, paymentLabels } from '@/lib/orders'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
@@ -214,6 +214,10 @@ export default function AdminOrdersPage() {
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Sana:</span>
                           <span className="text-foreground">{formatDate(order.createdAt)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">To&apos;lov:</span>
+                          <span className="text-foreground">{paymentLabels[order.paymentMethod]}</span>
                         </div>
                         {order.note && (
                           <div className="flex justify-between gap-4">

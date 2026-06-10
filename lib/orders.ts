@@ -2,6 +2,13 @@ import { supabase } from './supabase'
 import { CartItem } from './store'
 
 export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled'
+export type PaymentMethod = 'cash' | 'click' | 'payme'
+
+export const paymentLabels: Record<PaymentMethod, string> = {
+  cash: 'Naqd (eshik oldida)',
+  click: 'Click',
+  payme: 'Payme',
+}
 
 export interface OrderItem {
   id: string
@@ -21,6 +28,7 @@ export interface Order {
   items: OrderItem[]
   total: number
   status: OrderStatus
+  paymentMethod: PaymentMethod
   createdAt: string
 }
 
@@ -31,6 +39,7 @@ export interface OrderInput {
   note?: string
   items: CartItem[]
   total: number
+  paymentMethod: PaymentMethod
 }
 
 export async function createOrder(order: OrderInput): Promise<void> {
@@ -51,6 +60,7 @@ export async function createOrder(order: OrderInput): Promise<void> {
     items: itemsJson,
     total: order.total,
     status: 'pending',
+    payment_method: order.paymentMethod,
   })
 
   if (error) throw error
@@ -65,6 +75,7 @@ type DBOrder = {
   items: OrderItem[] | null
   total: number
   status: OrderStatus
+  payment_method: PaymentMethod | null
   created_at: string
 }
 
@@ -78,6 +89,7 @@ function toOrder(row: DBOrder): Order {
     items: row.items ?? [],
     total: row.total,
     status: row.status,
+    paymentMethod: row.payment_method ?? 'cash',
     createdAt: row.created_at,
   }
 }
