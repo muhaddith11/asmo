@@ -43,7 +43,7 @@ export function Footer() {
                 href="https://t.me/asmadesign"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label="Telegram"
@@ -54,7 +54,7 @@ export function Footer() {
                 href="https://instagram.com/asmadesign"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label="Instagram"
@@ -63,7 +63,7 @@ export function Footer() {
               </motion.a>
               <motion.a
                 href="tel:+998901234567"
-                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label="Telefon"
@@ -78,12 +78,12 @@ export function Footer() {
             <h3 className="text-sm font-sans tracking-[0.2em] uppercase text-foreground mb-6">
               Do&apos;kon
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                    className="flex items-center min-h-[44px] text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
                     {link.label}
                   </Link>
@@ -97,12 +97,12 @@ export function Footer() {
             <h3 className="text-sm font-sans tracking-[0.2em] uppercase text-foreground mb-6">
               Kompaniya
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                    className="flex items-center min-h-[44px] text-muted-foreground hover:text-primary transition-colors text-sm"
                   >
                     {link.label}
                   </Link>
@@ -127,7 +127,7 @@ export function Footer() {
                 <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <a
                   href="tel:+998901234567"
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                  className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   +998 90 123 45 67
                 </a>
@@ -153,13 +153,13 @@ export function Footer() {
             <div className="flex items-center gap-6">
               <Link
                 href="/privacy"
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center min-h-[44px] text-xs text-muted-foreground hover:text-primary transition-colors"
               >
                 Maxfiylik siyosati
               </Link>
               <Link
                 href="/terms"
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center min-h-[44px] text-xs text-muted-foreground hover:text-primary transition-colors"
               >
                 Foydalanish shartlari
               </Link>

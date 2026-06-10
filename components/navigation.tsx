@@ -41,7 +41,7 @@ export function Navigation() {
             {/* Menu Button - Mobile */}
             <button
               onClick={() => setMenuOpen(true)}
-              className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
+              className="lg:hidden p-3 text-foreground hover:text-primary transition-colors"
               aria-label="Menyuni ochish"
             >
               <Menu className="w-6 h-6" />
@@ -97,7 +97,7 @@ export function Navigation() {
               </button>
               <Link
                 href="/wishlist"
-                className="relative p-2 text-foreground/80 hover:text-primary transition-colors"
+                className="relative p-3 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Istaklar ro'yxati"
               >
                 <Heart className="w-5 h-5" />
@@ -109,7 +109,7 @@ export function Navigation() {
               </Link>
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-2 text-foreground/80 hover:text-primary transition-colors"
+                className="relative p-3 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Savat"
               >
                 <ShoppingBag className="w-5 h-5" />
@@ -153,7 +153,7 @@ export function Navigation() {
                 <span className="text-xl font-serif tracking-[0.2em]">MENYU</span>
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="p-2 text-foreground hover:text-primary transition-colors"
+                  className="p-3 text-foreground hover:text-primary transition-colors"
                   aria-label="Menyuni yopish"
                 >
                   <X className="w-6 h-6" />
