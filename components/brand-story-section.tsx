@@ -50,9 +50,9 @@ export function BrandStorySection() {
               Bizning Hikoya
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-light tracking-wider text-foreground mt-4 mb-8">
-              Crafted with
+              Sevgi bilan
               <br />
-              <span className="italic">Passion</span>
+              <span className="italic">Yaratilgan</span>
             </h2>
             <div className="space-y-6 text-muted-foreground leading-relaxed">
               <p>

@@ -48,7 +48,7 @@ export function Hero() {
           className="mb-6"
         >
           <span className="text-xs sm:text-sm tracking-[0.4em] text-primary font-sans uppercase">
-            Yangi Kolleksiya 2024
+            Yangi Kolleksiya 2026
           </span>
         </motion.div>
 
@@ -58,9 +58,9 @@ export function Hero() {
           transition={{ duration: 1, delay: 0.5 }}
           className="text-4xl sm:text-6xl lg:text-8xl font-serif font-light tracking-wider text-foreground mb-6 text-balance"
         >
-          Elegance
+          Elegantlik
           <br />
-          <span className="italic text-primary">Redefined</span>
+          <span className="italic text-primary">Yangicha</span>
         </motion.h1>
 
         <motion.p
@@ -93,7 +93,7 @@ export function Hero() {
           >
             <Link href="/lookbook" className="flex items-center gap-2">
               <Play className="w-4 h-4 group-hover:text-primary transition-colors" />
-              Lookbook
+              Lookbookni ko&apos;rish
             </Link>
           </Button>
         </motion.div>
@@ -128,7 +128,7 @@ export function Hero() {
       <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 z-20">
         <div className="transform rotate-90 origin-right">
           <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
-            Est. 2024
+            Tashkil: 2024
           </span>
         </div>
       </div>

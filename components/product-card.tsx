@@ -110,7 +110,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-primary'
             )}
-            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-label={inWishlist ? "Istaklar ro'yxatidan olib tashlash" : "Istaklar ro'yxatiga qo'shish"}
           >
             <Heart className={cn('w-4 h-4', inWishlist && 'fill-current')} />
           </button>

@@ -43,7 +43,7 @@ export function CartSidebar() {
               <button
                 onClick={() => setCartOpen(false)}
                 className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Close cart"
+                aria-label="Savatni yopish"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -109,7 +109,7 @@ export function CartSidebar() {
                                 )
                               }
                               className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                              aria-label="Decrease quantity"
+                              aria-label="Miqdorni kamaytirish"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
@@ -124,7 +124,7 @@ export function CartSidebar() {
                                 )
                               }
                               className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                              aria-label="Increase quantity"
+                              aria-label="Miqdorni ko'paytirish"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -135,7 +135,7 @@ export function CartSidebar() {
                               removeFromCart(item.product.id, item.size, item.color)
                             }
                             className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                            aria-label="Remove item"
+                            aria-label="Mahsulotni o'chirish"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

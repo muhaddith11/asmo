@@ -66,7 +66,7 @@ export function Footer() {
                 className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                aria-label="Phone"
+                aria-label="Telefon"
               >
                 <Phone className="w-4 h-4" />
               </motion.a>

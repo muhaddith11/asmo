@@ -10,48 +10,48 @@ import { Button } from '@/components/ui/button'
 const lookbookItems = [
   {
     id: '1',
-    title: 'The Gentleman',
-    season: 'Kuz/Qish 2024',
+    title: 'Jentlmen uslubi',
+    season: 'Kuz/Qish 2026',
     description: 'Klassik elegantlik zamonaviy uslub bilan uyg\'unlashgan.',
     image: '/lookbook/look-1.jpg',
     products: ['1', '2'],
   },
   {
     id: '2',
-    title: 'Urban Sophistication',
-    season: 'Kuz/Qish 2024',
+    title: 'Shahar elegantligi',
+    season: 'Kuz/Qish 2026',
     description: 'Shahar hayoti uchun mo\'ljallangan zamonaviy kostyumlar.',
     image: '/lookbook/look-2.jpg',
     products: ['2', '3'],
   },
   {
     id: '3',
-    title: 'Evening Elegance',
-    season: 'Kuz/Qish 2024',
+    title: 'Kechki nafosatlilik',
+    season: 'Kuz/Qish 2026',
     description: 'Maxsus tadbirlar uchun premium kiyimlar.',
     image: '/lookbook/look-3.jpg',
     products: ['1', '4'],
   },
   {
     id: '4',
-    title: 'Casual Luxury',
-    season: 'Kuz/Qish 2024',
+    title: 'Qulay hashamat',
+    season: 'Kuz/Qish 2026',
     description: 'Kundalik qulaylik va yuqori uslub.',
     image: '/lookbook/look-4.jpg',
     products: ['3', '5'],
   },
   {
     id: '5',
-    title: 'Business Elite',
-    season: 'Kuz/Qish 2024',
+    title: 'Biznes elita',
+    season: 'Kuz/Qish 2026',
     description: 'Ofis uchun professional va zamonaviy.',
     image: '/lookbook/look-5.jpg',
     products: ['2', '6'],
   },
   {
     id: '6',
-    title: 'Weekend Retreat',
-    season: 'Kuz/Qish 2024',
+    title: 'Dam olish kuni',
+    season: 'Kuz/Qish 2026',
     description: 'Dam olish kunlari uchun qulay va elegant.',
     image: '/lookbook/look-6.jpg',
     products: ['5', '6'],
@@ -94,7 +94,7 @@ export default function LookbookPage() {
           className="text-center"
         >
           <span className="text-xs tracking-[0.4em] text-primary font-sans uppercase">
-            Kuz/Qish 2024
+            Kuz/Qish 2026
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light tracking-wider text-foreground mt-4 mb-6">
             Lookbook
@@ -191,7 +191,7 @@ export default function LookbookPage() {
             <button
               onClick={closeLightbox}
               className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors z-10"
-              aria-label="Close"
+              aria-label="Yopish"
             >
               <X className="w-6 h-6" />
             </button>
@@ -200,14 +200,14 @@ export default function LookbookPage() {
             <button
               onClick={goToPrevious}
               className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 p-3 bg-card/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors z-10"
-              aria-label="Previous look"
+              aria-label="Oldingi obraz"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
               onClick={goToNext}
               className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 p-3 bg-card/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors z-10"
-              aria-label="Next look"
+              aria-label="Keyingi obraz"
             >
               <ChevronRight className="w-6 h-6" />
             </button>

@@ -11,29 +11,29 @@ import { cn } from '@/lib/utils'
 const lookbookItems = [
   {
     id: '1',
-    title: 'The Gentleman',
-    season: 'Kuz/Qish 2024',
+    title: 'Jentlmen uslubi',
+    season: 'Kuz/Qish 2026',
     image: '/lookbook/look-1.jpg',
     published: true,
   },
   {
     id: '2',
-    title: 'Urban Sophistication',
-    season: 'Kuz/Qish 2024',
+    title: 'Shahar elegantligi',
+    season: 'Kuz/Qish 2026',
     image: '/lookbook/look-2.jpg',
     published: true,
   },
   {
     id: '3',
-    title: 'Evening Elegance',
-    season: 'Kuz/Qish 2024',
+    title: 'Kechki nafosatlilik',
+    season: 'Kuz/Qish 2026',
     image: '/lookbook/look-3.jpg',
     published: true,
   },
   {
     id: '4',
-    title: 'Casual Luxury',
-    season: 'Kuz/Qish 2024',
+    title: 'Qulay hashamat',
+    season: 'Kuz/Qish 2026',
     image: '/lookbook/look-4.jpg',
     published: false,
   },
@@ -189,7 +189,7 @@ export default function AdminLookbookPage() {
                   Sarlavha
                 </label>
                 <Input
-                  placeholder="Masalan: The Gentleman"
+                  placeholder="Masalan: Jentlmen uslubi"
                   className="bg-card border-border"
                 />
               </div>
@@ -200,7 +200,7 @@ export default function AdminLookbookPage() {
                   Mavsum
                 </label>
                 <Input
-                  placeholder="Masalan: Kuz/Qish 2024"
+                  placeholder="Masalan: Kuz/Qish 2026"
                   className="bg-card border-border"
                 />
               </div>

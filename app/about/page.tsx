@@ -62,7 +62,7 @@ export default function AboutPage() {
             Biz haqimizda
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light tracking-wider text-foreground mt-4 mb-6">
-            Our Story
+            Bizning hikoyamiz
           </h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
             Premium erkaklar kiyimi. Qo&apos;qon shahrining yangi moda brendi.
@@ -157,7 +157,7 @@ export default function AboutPage() {
               Qadriyatlarimiz
             </span>
             <h2 className="text-3xl lg:text-4xl font-serif font-light text-foreground mt-4">
-              Our Values
+              Bizning qadriyatlarimiz
             </h2>
           </motion.div>
 
@@ -195,7 +195,7 @@ export default function AboutPage() {
             Tarixcha
           </span>
           <h2 className="text-3xl lg:text-4xl font-serif font-light text-foreground mt-4">
-            Our Journey
+            Bizning yo&apos;limiz
           </h2>
         </motion.div>
 

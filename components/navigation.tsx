@@ -42,7 +42,7 @@ export function Navigation() {
             <button
               onClick={() => setMenuOpen(true)}
               className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
-              aria-label="Open menu"
+              aria-label="Menyuni ochish"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -91,14 +91,14 @@ export function Navigation() {
             <div className="flex items-center gap-4">
               <button
                 className="hidden lg:block p-2 text-foreground/80 hover:text-primary transition-colors"
-                aria-label="Search"
+                aria-label="Qidirish"
               >
                 <Search className="w-5 h-5" />
               </button>
               <Link
                 href="/wishlist"
                 className="relative p-2 text-foreground/80 hover:text-primary transition-colors"
-                aria-label="Wishlist"
+                aria-label="Istaklar ro'yxati"
               >
                 <Heart className="w-5 h-5" />
                 {wishlist.length > 0 && (
@@ -110,7 +110,7 @@ export function Navigation() {
               <button
                 onClick={() => setCartOpen(true)}
                 className="relative p-2 text-foreground/80 hover:text-primary transition-colors"
-                aria-label="Shopping cart"
+                aria-label="Savat"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {getCartCount() > 0 && (
@@ -122,7 +122,7 @@ export function Navigation() {
               <Link
                 href="/admin"
                 className="hidden lg:block p-2 text-foreground/80 hover:text-primary transition-colors"
-                aria-label="Admin"
+                aria-label="Admin panel"
               >
                 <User className="w-5 h-5" />
               </Link>
@@ -150,11 +150,11 @@ export function Navigation() {
               className="fixed top-0 left-0 bottom-0 w-full max-w-sm bg-background z-50 flex flex-col"
             >
               <div className="flex items-center justify-between p-6 border-b border-border">
-                <span className="text-xl font-serif tracking-[0.2em]">MENU</span>
+                <span className="text-xl font-serif tracking-[0.2em]">MENYU</span>
                 <button
                   onClick={() => setMenuOpen(false)}
                   className="p-2 text-foreground hover:text-primary transition-colors"
-                  aria-label="Close menu"
+                  aria-label="Menyuni yopish"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -184,7 +184,7 @@ export function Navigation() {
                   className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <User className="w-5 h-5" />
-                  <span className="text-sm tracking-wider uppercase">Admin Panel</span>
+                  <span className="text-sm tracking-wider uppercase">Admin panel</span>
                 </Link>
               </div>
             </motion.div>

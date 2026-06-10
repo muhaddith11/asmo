@@ -98,7 +98,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-serif text-foreground mb-2">
-          Dashboard
+          Boshqaruv paneli
         </h1>
         <p className="text-muted-foreground">
           Asma Design boshqaruv paneli

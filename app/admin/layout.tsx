@@ -6,7 +6,7 @@ import { LayoutDashboard, Package, ShoppingCart, Image, Settings, ArrowLeft } fr
 import { cn } from '@/lib/utils'
 
 const adminNavItems = [
-  { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/admin', icon: LayoutDashboard, label: 'Bosh sahifa' },
   { href: '/admin/products', icon: Package, label: 'Mahsulotlar' },
   { href: '/admin/orders', icon: ShoppingCart, label: 'Buyurtmalar' },
   { href: '/admin/lookbook', icon: Image, label: 'Lookbook' },

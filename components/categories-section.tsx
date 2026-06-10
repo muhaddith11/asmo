@@ -52,7 +52,7 @@ export function CategoriesSection() {
             Kategoriyalar
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-light tracking-wider text-foreground mt-4">
-            Shop by Category
+            Kategoriya bo&apos;yicha tanlang
           </h2>
         </motion.div>
 

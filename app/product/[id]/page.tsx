@@ -126,14 +126,14 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1)) }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                    aria-label="Previous image"
+                    aria-label="Oldingi rasm"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1)) }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                    aria-label="Next image"
+                    aria-label="Keyingi rasm"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -235,11 +235,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <span className="text-sm tracking-wider uppercase block mb-3">Miqdor</span>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center border border-border">
-                    <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Decrease quantity">
+                    <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Miqdorni kamaytirish">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-12 text-center">{quantity}</span>
-                    <button onClick={() => setQuantity((q) => q + 1)} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Increase quantity">
+                    <button onClick={() => setQuantity((q) => q + 1)} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Miqdorni ko'paytirish">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
@@ -266,11 +266,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     'w-14 h-14 border flex items-center justify-center transition-colors',
                     inWishlist ? 'border-primary text-primary' : 'border-border text-muted-foreground hover:border-primary hover:text-primary'
                   )}
-                  aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                  aria-label={inWishlist ? "Istaklar ro'yxatidan olib tashlash" : "Istaklar ro'yxatiga qo'shish"}
                 >
                   <Heart className={cn('w-5 h-5', inWishlist && 'fill-current')} />
                 </button>
-                <button className="w-14 h-14 border border-border text-muted-foreground hover:border-primary hover:text-primary flex items-center justify-center transition-colors" aria-label="Share">
+                <button className="w-14 h-14 border border-border text-muted-foreground hover:border-primary hover:text-primary flex items-center justify-center transition-colors" aria-label="Ulashish">
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>
@@ -328,7 +328,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setShowImageModal(false)}
           >
-            <button onClick={() => setShowImageModal(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close">
+            <button onClick={() => setShowImageModal(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Yopish">
               <X className="w-6 h-6" />
             </button>
             <div className="relative w-full max-w-4xl aspect-[3/4] mx-4">
@@ -365,7 +365,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center"
           >
-            <button onClick={() => setShow3DViewer(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close">
+            <button onClick={() => setShow3DViewer(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Yopish">
               <X className="w-6 h-6" />
             </button>
             <div className="w-full max-w-4xl aspect-square mx-4 bg-card rounded-lg flex items-center justify-center">
