@@ -29,7 +29,7 @@ const defaultForm: ProductFormData = {
   new: true,
 }
 
-const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '44', '46', '48', '50', '52', '54', '38', '39', '40', '41', '42', '43', '44', '85', '90', '95', '100', '105']
+const allSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '44', '46', '48', '50', '52', '54', '38', '39', '40', '41', '42', '43', '85', '90', '95', '100', '105']
 const allColors = [
   { id: 'black', label: 'Qora', hex: '#1a1a1a' },
   { id: 'white', label: 'Oq', hex: '#f5f5f5' },
