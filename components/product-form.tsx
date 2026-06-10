@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Plus, X, Save, ArrowLeft } from 'lucide-react'
+import { X, Save, ArrowLeft, ImagePlus, Loader2 } from 'lucide-react'
 import { Product, categories } from '@/lib/store'
 import { createProduct, updateProduct } from '@/lib/products'
+import { uploadProductImage } from '@/lib/upload'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -18,7 +19,7 @@ const defaultForm: ProductFormData = {
   nameUz: '',
   price: 0,
   originalPrice: undefined,
-  images: [''],
+  images: [],
   category: 'suits',
   sizes: [],
   colors: [],
@@ -56,6 +57,7 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
     initialData ? { ...initialData } : defaultForm
   )
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   const set = (key: keyof ProductFormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -74,16 +76,24 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
     )
   }
 
-  const addImageField = () => set('images', [...form.images, ''])
-
-  const updateImage = (index: number, value: string) => {
-    const updated = [...form.images]
-    updated[index] = value
-    set('images', updated)
+  const removeImage = (index: number) => {
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))
   }
 
-  const removeImage = (index: number) => {
-    set('images', form.images.filter((_, i) => i !== index))
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    setUploading(true)
+    try {
+      const urls = await Promise.all(files.map((f) => uploadProductImage(f)))
+      setForm((prev) => ({ ...prev, images: [...prev.images.filter(Boolean), ...urls] }))
+    } catch (err) {
+      console.error(err)
+      alert("Rasm yuklashda xatolik yuz berdi. Qayta urinib ko'ring.")
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -242,37 +252,61 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
           className="bg-card border border-border rounded p-6"
         >
           <h2 className="text-sm tracking-wider uppercase text-muted-foreground mb-4">
-            Rasmlar (URL manzil)
+            Rasmlar
           </h2>
-          <div className="space-y-3">
-            {form.images.map((img, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Input
-                  value={img}
-                  onChange={(e) => updateImage(idx, e.target.value)}
-                  placeholder="/products/mahsulot-1.jpg yoki https://..."
-                  className="bg-background border-border flex-1"
-                />
-                {form.images.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeImage(idx)}
-                    className="p-2 text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {form.images.filter(Boolean).map((img, idx) => (
+              <div
+                key={idx}
+                className="relative aspect-square rounded overflow-hidden border border-border group"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 p-1 bg-background/90 rounded-full text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Rasmni o'chirish"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                {idx === 0 && (
+                  <span className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-primary text-primary-foreground text-[9px] uppercase tracking-wider rounded">
+                    Asosiy
+                  </span>
                 )}
               </div>
             ))}
-            <button
-              type="button"
-              onClick={addImageField}
-              className="flex items-center gap-2 text-sm text-primary hover:underline"
+
+            <label
+              className={cn(
+                'aspect-square rounded border-2 border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors text-muted-foreground',
+                uploading
+                  ? 'border-border opacity-60 cursor-wait'
+                  : 'border-border hover:border-primary hover:text-primary'
+              )}
             >
-              <Plus className="w-4 h-4" />
-              Rasm qo&apos;shish
-            </button>
+              {uploading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                <>
+                  <ImagePlus className="w-6 h-6" />
+                  <span className="text-[11px] text-center px-1">Rasm qo&apos;shish</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </label>
           </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Telefon yoki kompyuter galereyangizdan rasm tanlang. Birinchi rasm asosiy bo&apos;ladi.
+          </p>
         </motion.div>
 
         {/* O'lchamlar */}
