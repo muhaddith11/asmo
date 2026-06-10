@@ -2,10 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
-import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
-import { CartSidebar } from '@/components/cart-sidebar'
-import { DeliveryBanner } from '@/components/delivery-banner'
+import { SiteChrome } from '@/components/site-chrome'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin', 'cyrillic'],
@@ -77,11 +74,7 @@ export default function RootLayout({
   return (
     <html lang="uz" className="dark">
       <body className={`${cormorant.variable} ${inter.variable} font-serif antialiased overflow-x-clip`}>
-        <DeliveryBanner />
-        <Navigation />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <CartSidebar />
+        <SiteChrome>{children}</SiteChrome>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

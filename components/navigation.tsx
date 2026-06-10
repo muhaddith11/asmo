@@ -37,91 +37,79 @@ export function Navigation() {
         )}
       >
         <nav className="container mx-auto px-4 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Menu Button - Mobile */}
-            <button
-              onClick={() => setMenuOpen(true)}
-              className="lg:hidden p-3 text-foreground hover:text-primary transition-colors"
-              aria-label="Menyuni ochish"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Desktop Navigation - Left */}
-            <div className="hidden lg:flex items-center gap-8">
-              {navLinks.slice(0, 2).map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm tracking-[0.2em] uppercase text-foreground/80 hover:text-primary transition-colors duration-300"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* Logo - Center */}
-            <Link href="/" className="flex flex-col items-center group">
-              <motion.span
-                className="text-2xl lg:text-3xl font-serif font-light tracking-[0.3em] text-foreground"
-                whileHover={{ letterSpacing: '0.4em' }}
-                transition={{ duration: 0.3 }}
-              >
-                ASMA
-              </motion.span>
-              <span className="text-[10px] tracking-[0.5em] text-primary font-sans uppercase">
-                Design
-              </span>
-            </Link>
-
-            {/* Desktop Navigation - Right */}
-            <div className="hidden lg:flex items-center gap-8">
-              {navLinks.slice(2).map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm tracking-[0.2em] uppercase text-foreground/80 hover:text-primary transition-colors duration-300"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-20 gap-4">
+            {/* Left: Mobile menu + Logo */}
+            <div className="flex items-center gap-1 lg:gap-0">
               <button
-                className="hidden lg:block p-2 text-foreground/80 hover:text-primary transition-colors"
+                onClick={() => setMenuOpen(true)}
+                className="lg:hidden p-3 -ml-3 text-foreground hover:text-primary transition-colors"
+                aria-label="Menyuni ochish"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+
+              <Link href="/" className="flex flex-col group">
+                <motion.span
+                  className="text-2xl lg:text-3xl font-serif font-light tracking-[0.3em] text-foreground leading-none"
+                  whileHover={{ letterSpacing: '0.4em' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  ASMA
+                </motion.span>
+                <span className="text-[10px] tracking-[0.5em] text-primary font-sans uppercase mt-1">
+                  Design
+                </span>
+              </Link>
+            </div>
+
+            {/* Center-right: Desktop nav links */}
+            <div className="hidden lg:flex items-center gap-8 ml-auto mr-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm tracking-[0.2em] uppercase text-foreground/80 hover:text-primary transition-colors duration-300"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <button
+                className="hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Qidirish"
               >
                 <Search className="w-5 h-5" />
               </button>
               <Link
                 href="/wishlist"
-                className="relative p-3 text-foreground/80 hover:text-primary transition-colors"
+                className="relative flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Istaklar ro'yxati"
               >
                 <Heart className="w-5 h-5" />
                 {wishlist.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center justify-center">
                     {wishlist.length}
                   </span>
                 )}
               </Link>
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-3 text-foreground/80 hover:text-primary transition-colors"
+                className="relative flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Savat"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {getCartCount() > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-primary-foreground text-[10px] rounded-full flex items-center justify-center">
                     {getCartCount()}
                   </span>
                 )}
               </button>
               <Link
                 href="/admin"
-                className="hidden lg:block p-2 text-foreground/80 hover:text-primary transition-colors"
+                className="hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Admin panel"
               >
                 <User className="w-5 h-5" />

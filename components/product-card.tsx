@@ -53,16 +53,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
     >
-      <Link href={`/product/${product.id}`} className="block">
-        {/* Image Container */}
-        <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-4">
-          {/* Product Image */}
+      {/* Image Container */}
+      <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-4">
+        {/* Product Image (clickable) */}
+        <Link href={`/product/${product.id}`} className="absolute inset-0" aria-label={product.nameUz}>
           <Image
             src={product.images[imageIndex] || '/placeholder.jpg'}
             alt={product.nameUz}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
+        </Link>
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
@@ -137,7 +138,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Product Info */}
-        <div className="space-y-2">
+        <Link href={`/product/${product.id}`} className="block space-y-2">
           <h3 className="font-serif text-foreground group-hover:text-primary transition-colors">
             {product.nameUz}
           </h3>
@@ -167,8 +168,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               </span>
             )}
           </div>
-        </div>
-      </Link>
+        </Link>
     </motion.div>
   )
 }
