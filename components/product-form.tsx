@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Plus, X, Save, ArrowLeft } from 'lucide-react'
-import { useStore, Product, categories } from '@/lib/store'
+import { Product, categories } from '@/lib/store'
+import { createProduct, updateProduct } from '@/lib/products'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -51,7 +52,6 @@ interface ProductFormProps {
 
 export function ProductForm({ initialData, mode }: ProductFormProps) {
   const router = useRouter()
-  const { addProduct, updateProduct } = useStore()
   const [form, setForm] = useState<ProductFormData>(
     initialData ? { ...initialData } : defaultForm
   )
@@ -86,21 +86,23 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
     set('images', form.images.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    const cleanedImages = form.images.filter((img) => img.trim() !== '')
-    const data = { ...form, images: cleanedImages.length ? cleanedImages : ['/placeholder.jpg'] }
+    try {
+      const cleanedImages = form.images.filter((img) => img.trim() !== '')
+      const data = { ...form, images: cleanedImages.length ? cleanedImages : ['/placeholder.jpg'] }
 
-    if (mode === 'new') {
-      addProduct(data)
-    } else if (initialData) {
-      updateProduct(initialData.id, data)
-    }
-
-    setTimeout(() => {
+      if (mode === 'new') {
+        await createProduct(data)
+      } else if (initialData) {
+        await updateProduct(initialData.id, data)
+      }
       router.push('/admin/products')
-    }, 500)
+    } catch (e) {
+      console.error(e)
+      setSaving(false)
+    }
   }
 
   return (
