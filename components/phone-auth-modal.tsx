@@ -21,12 +21,14 @@ export function PhoneAuthModal({ open, onClose }: PhoneAuthModalProps) {
   const [error, setError] = useState('')
 
   const formatPhone = (val: string) => {
+    // Format: +998 50 250 05 50  (3-2-3-2-2 = 12 digits)
     const digits = val.replace(/\D/g, '').slice(0, 12)
-    if (digits.length <= 3) return digits
+    if (digits.length === 0) return ''
+    if (digits.length <= 3) return `+${digits}`
     if (digits.length <= 5) return `+${digits.slice(0, 3)} ${digits.slice(3)}`
-    if (digits.length <= 7) return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`
-    if (digits.length <= 9) return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`
-    return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)} ${digits.slice(9, 11)}`
+    if (digits.length <= 8) return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5)}`
+    if (digits.length <= 10) return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8)}`
+    return `+${digits.slice(0, 3)} ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10, 12)}`
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
