@@ -5,26 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Minus, Plus, Share2, Truck, RotateCcw, Shield, ChevronLeft, ChevronRight, X, View, Loader2 } from 'lucide-react'
-import { useStore, formatPrice, Product } from '@/lib/store'
+import { useStore, formatPrice, Product, colorMap } from '@/lib/store'
 import { fetchProducts } from '@/lib/products'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ProductCard } from '@/components/product-card'
-
-const colorMap: Record<string, string> = {
-  black: '#1a1a1a',
-  white: '#ffffff',
-  navy: '#1a2744',
-  charcoal: '#36454f',
-  grey: '#808080',
-  brown: '#8b4513',
-  camel: '#c19a6b',
-  lightblue: '#add8e6',
-  pink: '#ffc0cb',
-  beige: '#f5f5dc',
-  red: '#c0392b',
-  green: '#2e7d32',
-}
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)

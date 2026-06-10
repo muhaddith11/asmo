@@ -19,6 +19,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://asmo-lake.vercel.app'),
   title: 'Asma Design | Premium Erkaklar Kiyimi - Qo\'qon',
   description: 'Erkaklar uchun premium kiyimlar - Qo\'qon shahri. Jahon brendlari darajasidagi sifat va dizayn. Kostyumlar, paltolar, ko\'ylaklar va aksessuarlar.',
   keywords: ['erkaklar kiyimi', 'premium moda', 'Qo\'qon', 'kostyum', 'palto', 'Asma Design'],

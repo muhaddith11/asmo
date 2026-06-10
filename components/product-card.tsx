@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Heart, ShoppingBag, Eye } from 'lucide-react'
-import { Product, useStore, formatPrice } from '@/lib/store'
+import { Product, useStore, formatPrice, colorMap } from '@/lib/store'
 import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
@@ -157,28 +157,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               <span
                 key={color}
                 className="w-4 h-4 rounded-full border border-border"
-                style={{
-                  backgroundColor:
-                    color === 'black'
-                      ? '#1a1a1a'
-                      : color === 'white'
-                      ? '#ffffff'
-                      : color === 'navy'
-                      ? '#1a2744'
-                      : color === 'charcoal'
-                      ? '#36454f'
-                      : color === 'grey'
-                      ? '#808080'
-                      : color === 'brown'
-                      ? '#8b4513'
-                      : color === 'camel'
-                      ? '#c19a6b'
-                      : color === 'lightblue'
-                      ? '#add8e6'
-                      : color === 'pink'
-                      ? '#ffc0cb'
-                      : color,
-                }}
+                style={{ backgroundColor: colorMap[color] || color }}
                 title={color}
               />
             ))}

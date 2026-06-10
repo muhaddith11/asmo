@@ -34,100 +34,20 @@ export interface FilterState {
   sortBy: 'newest' | 'price-asc' | 'price-desc' | 'popular'
 }
 
-export const sampleProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Classic Wool Overcoat',
-    nameUz: 'Klassik Jun Palto',
-    price: 2500000,
-    originalPrice: 3200000,
-    images: ['/products/coat-1.jpg', '/products/coat-2.jpg'],
-    category: 'coats',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['black', 'navy', 'charcoal'],
-    description: 'Premium wool overcoat with Italian craftsmanship',
-    descriptionUz: 'Italiya ustaligi bilan tayyorlangan premium jun palto',
-    inStock: true,
-    featured: true,
-    new: true,
-  },
-  {
-    id: '2',
-    name: 'Slim Fit Business Suit',
-    nameUz: 'Slim Fit Biznes Kostyum',
-    price: 3800000,
-    images: ['/products/suit-1.jpg', '/products/suit-2.jpg'],
-    category: 'suits',
-    sizes: ['46', '48', '50', '52', '54'],
-    colors: ['black', 'navy', 'grey'],
-    description: 'Tailored slim fit suit for the modern gentleman',
-    descriptionUz: 'Zamonaviy jentlmen uchun tikuvchi slim fit kostyum',
-    inStock: true,
-    featured: true,
-    new: false,
-  },
-  {
-    id: '3',
-    name: 'Premium Cotton Shirt',
-    nameUz: "Premium Paxta Ko'ylak",
-    price: 450000,
-    images: ['/products/shirt-1.jpg', '/products/shirt-2.jpg'],
-    category: 'shirts',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['white', 'lightblue', 'pink'],
-    description: 'Egyptian cotton dress shirt with perfect fit',
-    descriptionUz: "Mukammal mos keladigan Misr paxtasidan ko'ylak",
-    inStock: true,
-    featured: false,
-    new: true,
-  },
-  {
-    id: '4',
-    name: 'Leather Oxford Shoes',
-    nameUz: 'Charm Oxford Poyafzal',
-    price: 1200000,
-    originalPrice: 1500000,
-    images: ['/products/shoes-1.jpg', '/products/shoes-2.jpg'],
-    category: 'shoes',
-    sizes: ['39', '40', '41', '42', '43', '44'],
-    colors: ['black', 'brown'],
-    description: 'Handcrafted Italian leather oxford shoes',
-    descriptionUz: "Qo'lda ishlangan Italiya charmi oxford poyafzallari",
-    inStock: true,
-    featured: true,
-    new: false,
-  },
-  {
-    id: '5',
-    name: 'Cashmere Sweater',
-    nameUz: 'Kashmir Sviter',
-    price: 1800000,
-    images: ['/products/sweater-1.jpg', '/products/sweater-2.jpg'],
-    category: 'knitwear',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['camel', 'navy', 'grey'],
-    description: 'Luxurious cashmere sweater for ultimate comfort',
-    descriptionUz: 'Eng yuqori qulaylik uchun hashamatli kashmir sviter',
-    inStock: true,
-    featured: false,
-    new: true,
-  },
-  {
-    id: '6',
-    name: 'Designer Belt',
-    nameUz: 'Dizayner Kamar',
-    price: 380000,
-    images: ['/products/belt-1.jpg', '/products/belt-2.jpg'],
-    category: 'accessories',
-    sizes: ['85', '90', '95', '100', '105'],
-    colors: ['black', 'brown'],
-    description: 'Premium leather belt with signature buckle',
-    descriptionUz: 'Imzo tokasi bilan premium charm kamar',
-    inStock: true,
-    featured: false,
-    new: false,
-  },
-]
+export const colorMap: Record<string, string> = {
+  black: '#1a1a1a',
+  white: '#f5f5f5',
+  navy: '#1a2744',
+  charcoal: '#36454f',
+  grey: '#808080',
+  brown: '#8b4513',
+  camel: '#c19a6b',
+  lightblue: '#add8e6',
+  pink: '#ffc0cb',
+  beige: '#f5f5dc',
+  red: '#c0392b',
+  green: '#2e7d32',
+}
 
 export const categories = [
   { id: 'all', name: 'All', nameUz: 'Barchasi' },
@@ -149,12 +69,6 @@ export const formatPrice = (price: number): string => {
 }
 
 interface StoreState {
-  // Products
-  products: Product[]
-  addProduct: (product: Omit<Product, 'id'>) => void
-  updateProduct: (id: string, updates: Partial<Product>) => void
-  deleteProduct: (id: string) => void
-
   // Cart
   cart: CartItem[]
   addToCart: (item: CartItem) => void
@@ -193,26 +107,6 @@ const defaultFilters: FilterState = {
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
-      // Products
-      products: sampleProducts,
-      addProduct: (product) =>
-        set((state) => ({
-          products: [
-            ...state.products,
-            { ...product, id: Date.now().toString() },
-          ],
-        })),
-      updateProduct: (id, updates) =>
-        set((state) => ({
-          products: state.products.map((p) =>
-            p.id === id ? { ...p, ...updates } : p
-          ),
-        })),
-      deleteProduct: (id) =>
-        set((state) => ({
-          products: state.products.filter((p) => p.id !== id),
-        })),
-
       // Cart
       cart: [],
       addToCart: (item) =>
@@ -280,7 +174,6 @@ export const useStore = create<StoreState>()(
     {
       name: 'asma-design-store',
       partialize: (state) => ({
-        products: state.products,
         cart: state.cart,
         wishlist: state.wishlist,
       }),
