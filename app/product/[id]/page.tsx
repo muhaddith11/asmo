@@ -1,27 +1,67 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState, use, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Minus, Plus, Share2, Truck, RotateCcw, Shield, ChevronLeft, ChevronRight, X, View } from 'lucide-react'
-import { sampleProducts, useStore, formatPrice } from '@/lib/store'
+import { Heart, Minus, Plus, Share2, Truck, RotateCcw, Shield, ChevronLeft, ChevronRight, X, View, Loader2 } from 'lucide-react'
+import { useStore, formatPrice, Product } from '@/lib/store'
+import { fetchProducts } from '@/lib/products'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ProductCard } from '@/components/product-card'
 
+const colorMap: Record<string, string> = {
+  black: '#1a1a1a',
+  white: '#ffffff',
+  navy: '#1a2744',
+  charcoal: '#36454f',
+  grey: '#808080',
+  brown: '#8b4513',
+  camel: '#c19a6b',
+  lightblue: '#add8e6',
+  pink: '#ffc0cb',
+  beige: '#f5f5dc',
+  red: '#c0392b',
+  green: '#2e7d32',
+}
+
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const product = sampleProducts.find((p) => p.id === id)
-  
+
+  const [product, setProduct] = useState<Product | null>(null)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [showImageModal, setShowImageModal] = useState(false)
   const [show3DViewer, setShow3DViewer] = useState(false)
-  
+
   const { addToCart, setCartOpen, addToWishlist, removeFromWishlist, isInWishlist } = useStore()
+  const inWishlist = isInWishlist(product?.id ?? '')
+
+  useEffect(() => {
+    setLoading(true)
+    fetchProducts().then((all) => {
+      const found = all.find((p) => p.id === id) ?? null
+      setProduct(found)
+      setRelatedProducts(
+        found ? all.filter((p) => p.category === found.category && p.id !== id).slice(0, 4) : []
+      )
+      setLoading(false)
+    })
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-40 flex items-center justify-center gap-3 text-muted-foreground">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        <span>Yuklanmoqda...</span>
+      </div>
+    )
+  }
 
   if (!product) {
     return (
@@ -34,33 +74,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     )
   }
 
-  const inWishlist = isInWishlist(product.id)
-  const relatedProducts = sampleProducts
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4)
-
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) return
-    
-    addToCart({
-      product,
-      quantity,
-      size: selectedSize,
-      color: selectedColor,
-    })
+    addToCart({ product, quantity, size: selectedSize, color: selectedColor })
     setCartOpen(true)
-  }
-
-  const colorMap: Record<string, string> = {
-    black: '#1a1a1a',
-    white: '#ffffff',
-    navy: '#1a2744',
-    charcoal: '#36454f',
-    grey: '#808080',
-    brown: '#8b4513',
-    camel: '#c19a6b',
-    lightblue: '#add8e6',
-    pink: '#ffc0cb',
   }
 
   return (
@@ -80,7 +97,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Product Images */}
           <div className="space-y-4">
-            {/* Main Image */}
             <motion.div
               className="relative aspect-[3/4] bg-muted cursor-zoom-in overflow-hidden"
               onClick={() => setShowImageModal(true)}
@@ -94,14 +110,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 className="object-cover"
                 priority
               />
-              
-              {/* 3D View Button */}
+
               {product.model3d && (
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setShow3DViewer(true)
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setShow3DViewer(true) }}
                   className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 bg-background/90 backdrop-blur-sm text-foreground text-sm hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   <View className="w-4 h-4" />
@@ -109,24 +121,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 </button>
               )}
 
-              {/* Navigation Arrows */}
               {product.images.length > 1 && (
                 <>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1))
-                    }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1)) }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1))
-                    }}
+                    onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1)) }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                     aria-label="Next image"
                   >
@@ -136,7 +141,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               )}
             </motion.div>
 
-            {/* Thumbnails */}
             {product.images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {product.images.map((image, index) => (
@@ -145,17 +149,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     onClick={() => setSelectedImage(index)}
                     className={cn(
                       'relative w-20 h-24 shrink-0 overflow-hidden transition-all',
-                      selectedImage === index
-                        ? 'ring-2 ring-primary'
-                        : 'ring-1 ring-border hover:ring-primary/50'
+                      selectedImage === index ? 'ring-2 ring-primary' : 'ring-1 ring-border hover:ring-primary/50'
                     )}
                   >
-                    <Image
-                      src={image}
-                      alt={`${product.nameUz} - ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={image} alt={`${product.nameUz} - ${index + 1}`} fill className="object-cover" />
                   </button>
                 ))}
               </div>
@@ -164,109 +161,85 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
           {/* Product Info */}
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              {/* Title & Price */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <div className="mb-6">
                 {product.new && (
                   <span className="inline-block px-2 py-1 bg-primary text-primary-foreground text-[10px] tracking-wider uppercase mb-3">
                     Yangi
                   </span>
                 )}
-                <h1 className="text-3xl lg:text-4xl font-serif font-light text-foreground mb-2">
-                  {product.nameUz}
-                </h1>
+                <h1 className="text-3xl lg:text-4xl font-serif font-light text-foreground mb-2">{product.nameUz}</h1>
                 <p className="text-muted-foreground mb-4">{product.name}</p>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl text-primary font-medium">
-                    {formatPrice(product.price)}
-                  </span>
+                  <span className="text-2xl text-primary font-medium">{formatPrice(product.price)}</span>
                   {product.originalPrice && (
-                    <span className="text-lg text-muted-foreground line-through">
-                      {formatPrice(product.originalPrice)}
-                    </span>
+                    <span className="text-lg text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
                   )}
                 </div>
               </div>
 
-              {/* Description */}
-              <p className="text-muted-foreground leading-relaxed mb-8">
-                {product.descriptionUz}
-              </p>
+              <p className="text-muted-foreground leading-relaxed mb-8">{product.descriptionUz}</p>
 
               {/* Color Selection */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm tracking-wider uppercase">Rang</span>
-                  {selectedColor && (
-                    <span className="text-sm text-muted-foreground capitalize">{selectedColor}</span>
-                  )}
+              {product.colors.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm tracking-wider uppercase">Rang</span>
+                    {selectedColor && <span className="text-sm text-muted-foreground capitalize">{selectedColor}</span>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {product.colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={cn(
+                          'w-10 h-10 rounded-full border-2 transition-all',
+                          selectedColor === color ? 'border-primary scale-110' : 'border-transparent hover:scale-105'
+                        )}
+                        style={{ backgroundColor: colorMap[color] || color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {product.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={cn(
-                        'w-10 h-10 rounded-full border-2 transition-all',
-                        selectedColor === color
-                          ? 'border-primary scale-110'
-                          : 'border-transparent hover:scale-105'
-                      )}
-                      style={{ backgroundColor: colorMap[color] || color }}
-                      title={color}
-                    />
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Size Selection */}
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm tracking-wider uppercase">O&apos;lcham</span>
-                  <button className="text-xs text-primary hover:underline">
-                    O&apos;lcham jadvali
-                  </button>
+              {product.sizes.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm tracking-wider uppercase">O&apos;lcham</span>
+                    <button className="text-xs text-primary hover:underline">O&apos;lcham jadvali</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={cn(
+                          'min-w-[48px] h-12 px-4 border text-sm tracking-wider transition-colors',
+                          selectedSize === size
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border hover:border-primary'
+                        )}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={cn(
-                        'min-w-[48px] h-12 px-4 border text-sm tracking-wider transition-colors',
-                        selectedSize === size
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-border hover:border-primary'
-                      )}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              )}
 
               {/* Quantity */}
               <div className="mb-8">
                 <span className="text-sm tracking-wider uppercase block mb-3">Miqdor</span>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center border border-border">
-                    <button
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      className="p-3 text-muted-foreground hover:text-foreground transition-colors"
-                      aria-label="Decrease quantity"
-                    >
+                    <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Decrease quantity">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-12 text-center">{quantity}</span>
-                    <button
-                      onClick={() => setQuantity((q) => q + 1)}
-                      className="p-3 text-muted-foreground hover:text-foreground transition-colors"
-                      aria-label="Increase quantity"
-                    >
+                    <button onClick={() => setQuantity((q) => q + 1)} className="p-3 text-muted-foreground hover:text-foreground transition-colors" aria-label="Increase quantity">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
@@ -291,18 +264,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   onClick={() => inWishlist ? removeFromWishlist(product.id) : addToWishlist(product.id)}
                   className={cn(
                     'w-14 h-14 border flex items-center justify-center transition-colors',
-                    inWishlist
-                      ? 'border-primary text-primary'
-                      : 'border-border text-muted-foreground hover:border-primary hover:text-primary'
+                    inWishlist ? 'border-primary text-primary' : 'border-border text-muted-foreground hover:border-primary hover:text-primary'
                   )}
                   aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
                   <Heart className={cn('w-5 h-5', inWishlist && 'fill-current')} />
                 </button>
-                <button
-                  className="w-14 h-14 border border-border text-muted-foreground hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                  aria-label="Share"
-                >
+                <button className="w-14 h-14 border border-border text-muted-foreground hover:border-primary hover:text-primary flex items-center justify-center transition-colors" aria-label="Share">
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>
@@ -360,38 +328,23 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setShowImageModal(false)}
           >
-            <button
-              onClick={() => setShowImageModal(false)}
-              className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close"
-            >
+            <button onClick={() => setShowImageModal(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close">
               <X className="w-6 h-6" />
             </button>
             <div className="relative w-full max-w-4xl aspect-[3/4] mx-4">
-              <Image
-                src={product.images[selectedImage] || '/placeholder.jpg'}
-                alt={product.nameUz}
-                fill
-                className="object-contain"
-              />
+              <Image src={product.images[selectedImage] || '/placeholder.jpg'} alt={product.nameUz} fill className="object-contain" />
             </div>
             {product.images.length > 1 && (
               <>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1))
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1)) }}
                   className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-card/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1))
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1)) }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-card/80 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
                   aria-label="Next image"
                 >
@@ -412,23 +365,14 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center"
           >
-            <button
-              onClick={() => setShow3DViewer(false)}
-              className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close"
-            >
+            <button onClick={() => setShow3DViewer(false)} className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Close">
               <X className="w-6 h-6" />
             </button>
             <div className="w-full max-w-4xl aspect-square mx-4 bg-card rounded-lg flex items-center justify-center">
-              {/* Model Viewer Placeholder - in production use @google/model-viewer */}
               <div className="text-center p-8">
                 <View className="w-16 h-16 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-serif mb-2">360° Ko&apos;rish</h3>
-                <p className="text-muted-foreground text-sm">
-                  3D model viewer bu yerda ko&apos;rsatiladi.
-                  <br />
-                  @google/model-viewer kutubxonasi bilan integratsiya qiling.
-                </p>
+                <p className="text-muted-foreground text-sm">3D model viewer bu yerda ko&apos;rsatiladi.</p>
               </div>
             </div>
           </motion.div>

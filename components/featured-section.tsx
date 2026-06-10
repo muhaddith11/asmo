@@ -1,18 +1,25 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
-import { sampleProducts } from '@/lib/store'
+import { fetchProducts } from '@/lib/products'
+import { Product } from '@/lib/store'
 
 export function FeaturedSection() {
-  const featuredProducts = sampleProducts.filter((p) => p.featured)
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+
+  useEffect(() => {
+    fetchProducts().then((all) => setFeaturedProducts(all.filter((p) => p.featured)))
+  }, [])
+
+  if (featuredProducts.length === 0) return null
 
   return (
     <section className="py-20 lg:py-32 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -24,14 +31,13 @@ export function FeaturedSection() {
             Tanlangan
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-light tracking-wider text-foreground mt-4 mb-6">
-            Featured Collection
+            Tavsiya etilgan kolleksiya
           </h2>
           <p className="max-w-lg mx-auto text-muted-foreground text-sm leading-relaxed">
             Bizning eng mashhur va eng sifatli mahsulotlarimizni kashf eting
           </p>
         </motion.div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {featuredProducts.map((product, index) => (
             <motion.div
@@ -46,7 +52,6 @@ export function FeaturedSection() {
           ))}
         </div>
 
-        {/* View All Link */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
