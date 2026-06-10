@@ -1,6 +1,29 @@
 import { supabase } from './supabase'
 import { CartItem } from './store'
 
+export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled'
+
+export interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  size: string
+  color: string
+}
+
+export interface Order {
+  id: number
+  customerName: string
+  phone: string
+  address: string
+  note: string
+  items: OrderItem[]
+  total: number
+  status: OrderStatus
+  createdAt: string
+}
+
 export interface OrderInput {
   customerName: string
   phone: string
@@ -30,5 +53,46 @@ export async function createOrder(order: OrderInput): Promise<void> {
     status: 'pending',
   })
 
+  if (error) throw error
+}
+
+type DBOrder = {
+  id: number
+  customer_name: string
+  phone: string
+  address: string
+  note: string | null
+  items: OrderItem[] | null
+  total: number
+  status: OrderStatus
+  created_at: string
+}
+
+function toOrder(row: DBOrder): Order {
+  return {
+    id: row.id,
+    customerName: row.customer_name,
+    phone: row.phone,
+    address: row.address,
+    note: row.note ?? '',
+    items: row.items ?? [],
+    total: row.total,
+    status: row.status,
+    createdAt: row.created_at,
+  }
+}
+
+export async function fetchOrders(): Promise<Order[]> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as DBOrder[]).map(toOrder)
+}
+
+export async function updateOrderStatus(id: number, status: OrderStatus): Promise<void> {
+  const { error } = await supabase.from('orders').update({ status }).eq('id', id)
   if (error) throw error
 }

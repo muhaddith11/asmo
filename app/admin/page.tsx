@@ -1,98 +1,100 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Package, ShoppingCart, Users, TrendingUp, ArrowUp, ArrowDown, Eye } from 'lucide-react'
+import { Package, ShoppingCart, Clock, TrendingUp, Eye, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { formatPrice } from '@/lib/store'
+import { fetchOrders, Order, OrderStatus } from '@/lib/orders'
+import { fetchProducts } from '@/lib/products'
 
-const stats = [
-  {
-    label: 'Jami savdo',
-    value: '45,230,000',
-    change: '+12.5%',
-    trend: 'up',
-    icon: TrendingUp,
-  },
-  {
-    label: 'Buyurtmalar',
-    value: '156',
-    change: '+8.2%',
-    trend: 'up',
-    icon: ShoppingCart,
-  },
-  {
-    label: 'Mahsulotlar',
-    value: '48',
-    change: '+2',
-    trend: 'up',
-    icon: Package,
-  },
-  {
-    label: 'Tashrif buyuruvchilar',
-    value: '2,847',
-    change: '-3.1%',
-    trend: 'down',
-    icon: Users,
-  },
-]
-
-const recentOrders = [
-  {
-    id: '#1234',
-    customer: 'Abdulloh Karimov',
-    products: 2,
-    total: 3250000,
-    status: 'pending',
-    date: '2024-01-15',
-  },
-  {
-    id: '#1233',
-    customer: 'Sardor Toshmatov',
-    products: 1,
-    total: 1800000,
-    status: 'completed',
-    date: '2024-01-15',
-  },
-  {
-    id: '#1232',
-    customer: 'Bekzod Rahimov',
-    products: 3,
-    total: 5200000,
-    status: 'processing',
-    date: '2024-01-14',
-  },
-  {
-    id: '#1231',
-    customer: 'Javohir Aliyev',
-    products: 1,
-    total: 450000,
-    status: 'completed',
-    date: '2024-01-14',
-  },
-]
-
-const topProducts = [
-  { name: 'Klassik Jun Palto', sales: 28, revenue: 70000000 },
-  { name: 'Slim Fit Biznes Kostyum', sales: 24, revenue: 91200000 },
-  { name: 'Premium Paxta Ko\'ylak', sales: 45, revenue: 20250000 },
-  { name: 'Charm Oxford Poyafzal', sales: 18, revenue: 21600000 },
-]
-
-const statusColors = {
+const statusColors: Record<OrderStatus, string> = {
   pending: 'bg-yellow-500/10 text-yellow-500',
   processing: 'bg-blue-500/10 text-blue-500',
   completed: 'bg-green-500/10 text-green-500',
   cancelled: 'bg-red-500/10 text-red-500',
 }
 
-const statusLabels = {
+const statusLabels: Record<OrderStatus, string> = {
   pending: 'Kutilmoqda',
   processing: 'Jarayonda',
   completed: 'Bajarildi',
   cancelled: 'Bekor qilindi',
 }
 
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('uz-UZ', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
+interface TopProduct {
+  name: string
+  sales: number
+  revenue: number
+}
+
 export default function AdminDashboard() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [productCount, setProductCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([fetchOrders(), fetchProducts()])
+      .then(([ords, prods]) => {
+        setOrders(ords)
+        setProductCount(prods.length)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [])
+
+  // Statistika hisoblanadi (bekor qilinganlardan tashqari)
+  const validOrders = orders.filter((o) => o.status !== 'cancelled')
+  const totalRevenue = validOrders.reduce((sum, o) => sum + o.total, 0)
+  const pendingCount = orders.filter((o) => o.status === 'pending').length
+
+  const stats = [
+    { label: 'Jami savdo', value: formatPrice(totalRevenue), icon: TrendingUp },
+    { label: 'Buyurtmalar', value: String(orders.length), icon: ShoppingCart },
+    { label: 'Mahsulotlar', value: String(productCount), icon: Package },
+    { label: 'Kutilayotgan', value: String(pendingCount), icon: Clock },
+  ]
+
+  const recentOrders = orders.slice(0, 5)
+
+  // Eng ko'p sotilgan mahsulotlar buyurtmalardan hisoblanadi
+  const productMap = new Map<string, TopProduct>()
+  for (const order of validOrders) {
+    for (const item of order.items) {
+      const existing = productMap.get(item.name)
+      if (existing) {
+        existing.sales += item.quantity
+        existing.revenue += item.price * item.quantity
+      } else {
+        productMap.set(item.name, {
+          name: item.name,
+          sales: item.quantity,
+          revenue: item.price * item.quantity,
+        })
+      }
+    }
+  }
+  const topProducts = Array.from(productMap.values())
+    .sort((a, b) => b.sales - a.sales)
+    .slice(0, 5)
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32 gap-3 text-muted-foreground">
+        <Loader2 className="w-5 h-5 animate-spin" />
+        <span>Yuklanmoqda...</span>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 lg:p-8">
       {/* Header */}
@@ -100,9 +102,7 @@ export default function AdminDashboard() {
         <h1 className="text-2xl lg:text-3xl font-serif text-foreground mb-2">
           Boshqaruv paneli
         </h1>
-        <p className="text-muted-foreground">
-          Asma Design boshqaruv paneli
-        </p>
+        <p className="text-muted-foreground">Asma Design boshqaruv paneli</p>
       </div>
 
       {/* Stats Grid */}
@@ -119,20 +119,10 @@ export default function AdminDashboard() {
               <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                 <stat.icon className="w-5 h-5 text-primary" />
               </div>
-              <span
-                className={`flex items-center gap-1 text-xs ${
-                  stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
-                }`}
-              >
-                {stat.trend === 'up' ? (
-                  <ArrowUp className="w-3 h-3" />
-                ) : (
-                  <ArrowDown className="w-3 h-3" />
-                )}
-                {stat.change}
-              </span>
             </div>
-            <p className="text-2xl font-serif text-foreground mb-1">{stat.value}</p>
+            <p className="text-xl lg:text-2xl font-serif text-foreground mb-1 break-words">
+              {stat.value}
+            </p>
             <p className="text-xs text-muted-foreground">{stat.label}</p>
           </motion.div>
         ))}
@@ -148,42 +138,41 @@ export default function AdminDashboard() {
         >
           <div className="flex items-center justify-between p-4 lg:p-6 border-b border-border">
             <h2 className="font-serif text-foreground">So&apos;nggi buyurtmalar</h2>
-            <Link
-              href="/admin/orders"
-              className="text-sm text-primary hover:underline"
-            >
+            <Link href="/admin/orders" className="text-sm text-primary hover:underline">
               Barchasini ko&apos;rish
             </Link>
           </div>
           <div className="divide-y divide-border">
-            {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between p-4 lg:p-6 hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="font-medium text-foreground">{order.id}</span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${
-                        statusColors[order.status as keyof typeof statusColors]
-                      }`}
-                    >
-                      {statusLabels[order.status as keyof typeof statusLabels]}
-                    </span>
+            {recentOrders.length === 0 ? (
+              <p className="p-6 text-sm text-muted-foreground text-center">
+                Hozircha buyurtmalar yo&apos;q
+              </p>
+            ) : (
+              recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="flex items-center justify-between p-4 lg:p-6 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="font-medium text-foreground">#{order.id}</span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-wider ${statusColors[order.status]}`}
+                      >
+                        {statusLabels[order.status]}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {order.customerName} • {order.items.length} ta mahsulot
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {order.customer} • {order.products} ta mahsulot
-                  </p>
+                  <div className="text-right ml-4">
+                    <p className="font-medium text-foreground">{formatPrice(order.total)}</p>
+                    <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                  </div>
                 </div>
-                <div className="text-right ml-4">
-                  <p className="font-medium text-foreground">
-                    {formatPrice(order.total)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{order.date}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </motion.div>
 
@@ -196,35 +185,34 @@ export default function AdminDashboard() {
         >
           <div className="flex items-center justify-between p-4 lg:p-6 border-b border-border">
             <h2 className="font-serif text-foreground">Eng ko&apos;p sotilgan</h2>
-            <Link
-              href="/admin/products"
-              className="text-sm text-primary hover:underline"
-            >
+            <Link href="/admin/products" className="text-sm text-primary hover:underline">
               Barchasini ko&apos;rish
             </Link>
           </div>
           <div className="divide-y divide-border">
-            {topProducts.map((product, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-4 lg:p-6 hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="w-8 h-8 bg-muted rounded flex items-center justify-center text-sm text-muted-foreground">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="font-medium text-foreground">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {product.sales} ta sotildi
-                    </p>
+            {topProducts.length === 0 ? (
+              <p className="p-6 text-sm text-muted-foreground text-center">
+                Hozircha sotuvlar yo&apos;q
+              </p>
+            ) : (
+              topProducts.map((product, index) => (
+                <div
+                  key={product.name}
+                  className="flex items-center justify-between p-4 lg:p-6 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="w-8 h-8 bg-muted rounded flex items-center justify-center text-sm text-muted-foreground">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <p className="font-medium text-foreground">{product.name}</p>
+                      <p className="text-sm text-muted-foreground">{product.sales} ta sotildi</p>
+                    </div>
                   </div>
+                  <p className="font-medium text-primary">{formatPrice(product.revenue)}</p>
                 </div>
-                <p className="font-medium text-primary">
-                  {formatPrice(product.revenue)}
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </motion.div>
       </div>
