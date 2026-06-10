@@ -75,8 +75,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="uz" className="dark overflow-x-hidden">
-      <body className={`${cormorant.variable} ${inter.variable} font-serif antialiased overflow-x-hidden`}>
+    <html lang="uz" className="dark">
+      <body className={`${cormorant.variable} ${inter.variable} font-serif antialiased overflow-x-clip`}>
         <DeliveryBanner />
         <Navigation />
         <main className="min-h-screen">{children}</main>

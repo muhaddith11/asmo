@@ -58,6 +58,19 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
   )
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [customColor, setCustomColor] = useState('#7a5230')
+
+  // Tanlangan, lekin tayyor ro'yxatda yo'q ranglar (qo'lda qo'shilgan hex ranglar)
+  const customColors = form.colors.filter(
+    (c) => !allColors.some((ac) => ac.id === c)
+  )
+
+  const addCustomColor = () => {
+    const hex = customColor.toLowerCase()
+    if (!form.colors.includes(hex)) {
+      setForm((prev) => ({ ...prev, colors: [...prev.colors, hex] }))
+    }
+  }
 
   const set = (key: keyof ProductFormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -371,6 +384,51 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
                 {color.label}
               </button>
             ))}
+
+            {/* Qo'lda qo'shilgan ranglar */}
+            {customColors.map((hex) => (
+              <button
+                key={hex}
+                type="button"
+                onClick={() => toggleColor(hex)}
+                className="flex items-center gap-2 px-3 py-2 text-sm border rounded transition-colors bg-primary/10 text-primary border-primary"
+              >
+                <span
+                  className="w-4 h-4 rounded-full border border-border/50"
+                  style={{ backgroundColor: hex }}
+                />
+                {hex}
+                <X className="w-3.5 h-3.5 ml-1 opacity-60" />
+              </button>
+            ))}
+          </div>
+
+          {/* Yangi rang qo'shish */}
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border">
+            <label className="relative w-10 h-10 rounded-full overflow-hidden border border-border cursor-pointer shrink-0">
+              <span
+                className="absolute inset-0"
+                style={{ backgroundColor: customColor }}
+              />
+              <input
+                type="color"
+                value={customColor}
+                onChange={(e) => setCustomColor(e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                aria-label="Rang tanlash"
+              />
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addCustomColor}
+              className="border-border"
+            >
+              Shu rangni qo&apos;shish
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              Ro&apos;yxatda yo&apos;q rang uchun shu yerdan tanlang
+            </span>
           </div>
         </motion.div>
 

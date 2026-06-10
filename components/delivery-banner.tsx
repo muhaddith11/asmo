@@ -7,7 +7,7 @@ export function DeliveryBanner() {
   return (
     <div className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-center gap-3 py-2">
+        <div className="flex items-center justify-center gap-3 h-10">
           <motion.div
             animate={{ x: [0, 5, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
