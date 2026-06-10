@@ -94,6 +94,12 @@ interface StoreState {
   setCartOpen: (open: boolean) => void
   isMenuOpen: boolean
   setMenuOpen: (open: boolean) => void
+
+  // Auth (phone-based session)
+  authPhone: string | null
+  authName: string | null
+  setAuth: (phone: string, name: string) => void
+  clearAuth: () => void
 }
 
 const defaultFilters: FilterState = {
@@ -170,12 +176,20 @@ export const useStore = create<StoreState>()(
       setCartOpen: (open) => set({ isCartOpen: open }),
       isMenuOpen: false,
       setMenuOpen: (open) => set({ isMenuOpen: open }),
+
+      // Auth
+      authPhone: null,
+      authName: null,
+      setAuth: (phone, name) => set({ authPhone: phone, authName: name }),
+      clearAuth: () => set({ authPhone: null, authName: null }),
     }),
     {
       name: 'asma-design-store',
       partialize: (state) => ({
         cart: state.cart,
         wishlist: state.wishlist,
+        authPhone: state.authPhone,
+        authName: state.authName,
       }),
     }
   )

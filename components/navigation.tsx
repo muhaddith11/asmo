@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ShoppingBag, Heart, Search, User, ArrowRight } from 'lucide-react'
+import { Menu, X, ShoppingBag, Heart, Search, User, ArrowRight, LogIn } from 'lucide-react'
 import { useStore, formatPrice } from '@/lib/store'
 import { fetchProducts } from '@/lib/products'
+import { PhoneAuthModal } from '@/components/phone-auth-modal'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
@@ -21,8 +22,9 @@ export function Navigation() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [allProducts, setAllProducts] = useState<Awaited<ReturnType<typeof fetchProducts>>>([])
+  const [loginOpen, setLoginOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const { isMenuOpen, setMenuOpen, setCartOpen, getCartCount, wishlist } = useStore()
+  const { isMenuOpen, setMenuOpen, setCartOpen, getCartCount, wishlist, authPhone } = useStore()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30)
@@ -136,17 +138,30 @@ export function Navigation() {
                   </span>
                 )}
               </button>
-              <Link
-                href="/admin"
-                className="hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
-                aria-label="Admin panel"
-              >
-                <User className="w-5 h-5" />
-              </Link>
+              {authPhone ? (
+                <Link
+                  href="/profile"
+                  className="relative hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
+                  aria-label="Profil"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setLoginOpen(true)}
+                  className="hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
+                  aria-label="Kirish"
+                >
+                  <LogIn className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </div>
         </nav>
       </header>
+
+      <PhoneAuthModal open={loginOpen} onClose={() => setLoginOpen(false)} />
 
       {/* Search Modal */}
       <AnimatePresence>

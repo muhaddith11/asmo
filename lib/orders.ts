@@ -108,3 +108,15 @@ export async function updateOrderStatus(id: number, status: OrderStatus): Promis
   const { error } = await supabase.from('orders').update({ status }).eq('id', id)
   if (error) throw error
 }
+
+export async function fetchOrdersByPhone(phone: string): Promise<Order[]> {
+  const clean = phone.replace(/\s/g, '')
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('phone', clean)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data as DBOrder[]).map(toOrder)
+}

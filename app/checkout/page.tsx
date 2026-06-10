@@ -1,15 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { CheckCircle2, Loader2, ShoppingBag, Banknote, CreditCard, Clock } from 'lucide-react'
+import { CheckCircle2, Loader2, ShoppingBag, Banknote, CreditCard, Clock, MapPin, ChevronDown, ChevronUp } from 'lucide-react'
 import { useStore, formatPrice } from '@/lib/store'
 import { createOrder, PaymentMethod } from '@/lib/orders'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+
+// Dynamic import to avoid SSR issues with Leaflet
+const MapPicker = dynamic(
+  () => import('@/components/map-picker').then((m) => m.MapPicker),
+  { ssr: false, loading: () => (
+    <div className="h-[280px] bg-muted rounded border border-border flex items-center justify-center text-muted-foreground text-sm">
+      Xarita yuklanmoqda...
+    </div>
+  )}
+)
 
 const paymentOptions: {
   id: PaymentMethod
@@ -24,14 +35,30 @@ const paymentOptions: {
 ]
 
 export default function CheckoutPage() {
-  const { cart, getCartTotal, clearCart } = useStore()
+  const { cart, getCartTotal, clearCart, authPhone, authName } = useStore()
   const [form, setForm] = useState({ name: '', phone: '', address: '', note: '' })
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  const [showMap, setShowMap] = useState(false)
+
+  // Auto-fill from auth session
+  useEffect(() => {
+    if (authPhone) {
+      setForm((prev) => ({
+        ...prev,
+        phone: prev.phone || authPhone,
+        name: prev.name || authName || '',
+      }))
+    }
+  }, [authPhone, authName])
 
   const total = getCartTotal()
+
+  const handleMapSelect = (address: string) => {
+    setForm((prev) => ({ ...prev, address }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,7 +67,7 @@ export default function CheckoutPage() {
     try {
       await createOrder({
         customerName: form.name,
-        phone: form.phone,
+        phone: form.phone.replace(/\s/g, ''),
         address: form.address,
         note: form.note,
         items: cart,
@@ -72,12 +99,14 @@ export default function CheckoutPage() {
             <p className="text-muted-foreground mb-8">
               Tez orada operatorlarimiz siz bilan bog&apos;lanadi va buyurtmani tasdiqlaydi.
             </p>
-            <Button
-              asChild
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Link href="/collection">Xaridni davom ettirish</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild variant="outline">
+                <Link href="/profile">Buyurtmalarimni ko&apos;rish</Link>
+              </Button>
+              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link href="/collection">Xaridni davom ettirish</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -139,6 +168,8 @@ export default function CheckoutPage() {
                 className="bg-card border-border h-12"
               />
             </div>
+
+            {/* Address + Map */}
             <div>
               <label className="block text-sm text-foreground mb-2">
                 Manzil <span className="text-destructive">*</span>
@@ -148,9 +179,38 @@ export default function CheckoutPage() {
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
                 placeholder="Shahar, ko'cha, uy raqami"
-                className="bg-card border-border h-12"
+                className="bg-card border-border h-12 mb-2"
               />
+
+              {/* Map Toggle */}
+              <button
+                type="button"
+                onClick={() => setShowMap((v) => !v)}
+                className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                <MapPin className="w-4 h-4" />
+                {showMap ? 'Xaritani yopish' : 'Xaritadan manzil tanlash'}
+                {showMap ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+              {showMap && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-3"
+                >
+                  <MapPicker
+                    onAddressSelect={handleMapSelect}
+                    initialAddress={form.address}
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Xaritadan uyingizni bosib belgilang — manzil avtomatik to&apos;ldiriladi
+                  </p>
+                </motion.div>
+              )}
             </div>
+
             <div>
               <label className="block text-sm text-foreground mb-2">
                 Izoh (ixtiyoriy)
@@ -159,7 +219,7 @@ export default function CheckoutPage() {
                 rows={3}
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
-                placeholder="Qo'shimcha ma'lumot..."
+                placeholder="Qo'shimcha ma'lumot, ko'cha belgisi..."
                 className="w-full px-3 py-2 bg-card border border-border rounded text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>
