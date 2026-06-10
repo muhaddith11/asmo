@@ -31,6 +31,10 @@ function CollectionContent() {
     fetchProducts().then(setProducts)
   }, [])
 
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('category') || 'all')
+  }, [searchParams])
+
   const filteredProducts = useMemo(() => {
     let list = [...products]
     if (selectedCategory !== 'all') {

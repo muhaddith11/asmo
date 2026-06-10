@@ -40,7 +40,7 @@ export function Footer() {
             {/* Social Links */}
             <div className="flex items-center gap-4">
               <motion.a
-                href="https://t.me/asmadesign"
+                href="https://t.me/muhaddith707"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
@@ -51,7 +51,7 @@ export function Footer() {
                 <Send className="w-4 h-4" />
               </motion.a>
               <motion.a
-                href="https://instagram.com/asmadesign"
+                href="https://instagram.com/asmadesignofficial"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
@@ -62,7 +62,7 @@ export function Footer() {
                 <Instagram className="w-4 h-4" />
               </motion.a>
               <motion.a
-                href="tel:+998901234567"
+                href="tel:+998502500550"
                 className="w-11 h-11 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -126,10 +126,10 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <a
-                  href="tel:+998901234567"
+                  href="tel:+998502500550"
                   className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  +998 90 123 45 67
+                  +998 50 250 05 50
                 </a>
               </li>
               <li className="flex items-start gap-3">

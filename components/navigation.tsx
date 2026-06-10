@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ShoppingBag, Heart, Search, User } from 'lucide-react'
-import { useStore } from '@/lib/store'
+import { Menu, X, ShoppingBag, Heart, Search, User, ArrowRight } from 'lucide-react'
+import { useStore, formatPrice } from '@/lib/store'
+import { fetchProducts } from '@/lib/products'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
@@ -16,15 +18,41 @@ const navLinks = [
 
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [allProducts, setAllProducts] = useState<Awaited<ReturnType<typeof fetchProducts>>>([])
+  const inputRef = useRef<HTMLInputElement>(null)
   const { isMenuOpen, setMenuOpen, setCartOpen, getCartCount, wishlist } = useStore()
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 30)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 30)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (searchOpen) {
+      fetchProducts().then(setAllProducts).catch(() => {})
+      setTimeout(() => inputRef.current?.focus(), 100)
+    } else {
+      setSearchQuery('')
+    }
+  }, [searchOpen])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSearchOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const searchResults = searchQuery.trim().length > 1
+    ? allProducts.filter((p) =>
+        p.nameUz.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 6)
+    : []
 
   return (
     <>
@@ -78,6 +106,7 @@ export function Navigation() {
             {/* Right: Actions */}
             <div className="flex items-center gap-1 sm:gap-2">
               <button
+                onClick={() => setSearchOpen(true)}
                 className="hidden lg:flex items-center justify-center w-11 h-11 text-foreground/80 hover:text-primary transition-colors"
                 aria-label="Qidirish"
               >
@@ -118,6 +147,92 @@ export function Navigation() {
           </div>
         </nav>
       </header>
+
+      {/* Search Modal */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/95 backdrop-blur-md z-50"
+          >
+            <div className="container mx-auto px-4 lg:px-8 pt-8">
+              {/* Search Input */}
+              <div className="flex items-center gap-4 border-b border-border pb-4">
+                <Search className="w-5 h-5 text-muted-foreground shrink-0" />
+                <input
+                  ref={inputRef}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Mahsulot qidirish..."
+                  className="flex-1 bg-transparent text-lg text-foreground placeholder:text-muted-foreground outline-none"
+                />
+                <button
+                  onClick={() => setSearchOpen(false)}
+                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Results */}
+              <div className="mt-6">
+                {searchQuery.trim().length <= 1 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Qidirish uchun kamida 2 ta harf kiriting
+                  </p>
+                )}
+                {searchQuery.trim().length > 1 && searchResults.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    &quot;{searchQuery}&quot; bo&apos;yicha hech narsa topilmadi
+                  </p>
+                )}
+                {searchResults.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+                      {searchResults.length} ta natija
+                    </p>
+                    {searchResults.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={`/product/${product.id}`}
+                        onClick={() => setSearchOpen(false)}
+                        className="flex items-center gap-4 p-3 rounded hover:bg-muted transition-colors group"
+                      >
+                        <div className="relative w-14 h-18 bg-muted rounded overflow-hidden shrink-0" style={{ height: '72px' }}>
+                          <Image
+                            src={product.images[0] || '/placeholder.jpg'}
+                            alt={product.nameUz}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-serif text-foreground group-hover:text-primary transition-colors truncate">
+                            {product.nameUz}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formatPrice(product.price)}
+                          </p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                      </Link>
+                    ))}
+                    <Link
+                      href={`/collection`}
+                      onClick={() => setSearchOpen(false)}
+                      className="block text-center text-sm text-primary hover:underline py-4"
+                    >
+                      Barcha mahsulotlarni ko&apos;rish →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Menu */}
       <AnimatePresence>
