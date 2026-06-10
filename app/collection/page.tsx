@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { Filter, X, ChevronDown } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
-import { sampleProducts, categories, useStore } from '@/lib/store'
+import { fetchProducts } from '@/lib/products'
+import { categories, Product } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -16,47 +17,36 @@ const sortOptions = [
   { value: 'popular', label: 'Mashhur' },
 ]
 
-export default function CollectionPage() {
+function CollectionContent() {
   const searchParams = useSearchParams()
   const initialCategory = searchParams.get('category') || 'all'
-  
+
+  const [products, setProducts] = useState<Product[]>([])
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [sortBy, setSortBy] = useState<string>('newest')
   const [showFilters, setShowFilters] = useState(false)
   const [showSort, setShowSort] = useState(false)
-  
-  const { filters } = useStore()
+
+  useEffect(() => {
+    fetchProducts().then(setProducts)
+  }, [])
 
   const filteredProducts = useMemo(() => {
-    let products = [...sampleProducts]
-
-    // Filter by category
+    let list = [...products]
     if (selectedCategory !== 'all') {
-      products = products.filter((p) => p.category === selectedCategory)
+      list = list.filter((p) => p.category === selectedCategory)
     }
-
-    // Sort
     switch (sortBy) {
-      case 'price-asc':
-        products.sort((a, b) => a.price - b.price)
-        break
-      case 'price-desc':
-        products.sort((a, b) => b.price - a.price)
-        break
-      case 'newest':
-        products.sort((a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0))
-        break
-      case 'popular':
-        products.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-        break
+      case 'price-asc': list.sort((a, b) => a.price - b.price); break
+      case 'price-desc': list.sort((a, b) => b.price - a.price); break
+      case 'newest': list.sort((a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0)); break
+      case 'popular': list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)); break
     }
-
-    return products
-  }, [selectedCategory, sortBy, filters])
+    return list
+  }, [products, selectedCategory, sortBy])
 
   return (
     <div className="min-h-screen pt-32 pb-20">
-      {/* Page Header */}
       <div className="container mx-auto px-4 lg:px-8 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -73,10 +63,8 @@ export default function CollectionPage() {
         </motion.div>
       </div>
 
-      {/* Filters Bar */}
       <div className="container mx-auto px-4 lg:px-8 mb-8">
         <div className="flex items-center justify-between gap-4 py-4 border-y border-border">
-          {/* Category Tabs - Desktop */}
           <div className="hidden lg:flex items-center gap-6 overflow-x-auto">
             {categories.map((cat) => (
               <button
@@ -94,7 +82,6 @@ export default function CollectionPage() {
             ))}
           </div>
 
-          {/* Mobile Filter Button */}
           <Button
             variant="outline"
             size="sm"
@@ -105,7 +92,6 @@ export default function CollectionPage() {
             Filtr
           </Button>
 
-          {/* Sort Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowSort(!showSort)}
@@ -117,10 +103,7 @@ export default function CollectionPage() {
             <AnimatePresence>
               {showSort && (
                 <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setShowSort(false)}
-                  />
+                  <div className="fixed inset-0 z-40" onClick={() => setShowSort(false)} />
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -130,10 +113,7 @@ export default function CollectionPage() {
                     {sortOptions.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => {
-                          setSortBy(option.value)
-                          setShowSort(false)
-                        }}
+                        onClick={() => { setSortBy(option.value); setShowSort(false) }}
                         className={cn(
                           'w-full px-4 py-2 text-left text-sm transition-colors',
                           sortBy === option.value
@@ -150,19 +130,14 @@ export default function CollectionPage() {
             </AnimatePresence>
           </div>
 
-          {/* Results Count */}
           <span className="hidden sm:block text-sm text-muted-foreground">
             {filteredProducts.length} ta mahsulot
           </span>
         </div>
       </div>
 
-      {/* Products Grid */}
       <div className="container mx-auto px-4 lg:px-8">
-        <motion.div
-          layout
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8"
-        >
+        <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8">
           <AnimatePresence mode="popLayout">
             {filteredProducts.map((product, index) => (
               <motion.div
@@ -186,7 +161,6 @@ export default function CollectionPage() {
         )}
       </div>
 
-      {/* Mobile Filter Sidebar */}
       <AnimatePresence>
         {showFilters && (
           <>
@@ -206,30 +180,20 @@ export default function CollectionPage() {
             >
               <div className="flex items-center justify-between p-6 border-b border-border">
                 <span className="text-lg font-serif tracking-wider">Filtr</span>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <button onClick={() => setShowFilters(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="p-6">
-                <h3 className="text-sm tracking-wider uppercase text-foreground mb-4">
-                  Kategoriya
-                </h3>
+                <h3 className="text-sm tracking-wider uppercase text-foreground mb-4">Kategoriya</h3>
                 <div className="space-y-2">
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
-                      onClick={() => {
-                        setSelectedCategory(cat.id)
-                        setShowFilters(false)
-                      }}
+                      onClick={() => { setSelectedCategory(cat.id); setShowFilters(false) }}
                       className={cn(
                         'block w-full text-left py-2 text-sm transition-colors',
-                        selectedCategory === cat.id
-                          ? 'text-primary'
-                          : 'text-muted-foreground hover:text-foreground'
+                        selectedCategory === cat.id ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                       )}
                     >
                       {cat.nameUz}
@@ -242,5 +206,13 @@ export default function CollectionPage() {
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+export default function CollectionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen pt-32 flex items-center justify-center text-muted-foreground">Yuklanmoqda...</div>}>
+      <CollectionContent />
+    </Suspense>
   )
 }
